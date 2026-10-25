@@ -15,7 +15,10 @@ try {
 $local = ""
 if (Test-Path $verFile) { $local = (Get-Content $verFile -Raw).Trim() }
 
-if ($remote -eq $local) { exit }
+# --- الاسترجاع: يخرج فقط إذا كان الإصدار نفسه والملفان موجودان. لو نقص ملف، يكمل وينزّله ---
+$missing = $false
+foreach ($f in $files) { if (-not (Test-Path (Join-Path $dest $f))) { $missing = $true } }
+if (-not $missing -and $remote -eq $local) { exit }
 
 foreach ($f in $files) {
     $name = [IO.Path]::GetFileNameWithoutExtension($f)
